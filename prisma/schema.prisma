@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sector {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  image       String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  machines    Machine[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model Machine {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  description      String   @db.Text
+  shortDescription String?
+  sectorId         String
+  sector           Sector   @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  images           String[]
+  mainImage        String?
+  technicalSpecs   Json
+  features         String[]
+  isActive         Boolean  @default(true)
+  isFeatured       Boolean  @default(false)
+  order            Int      @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([sectorId])
+  @@index([slug])
+  @@index([isActive])
+  @@index([isFeatured])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
