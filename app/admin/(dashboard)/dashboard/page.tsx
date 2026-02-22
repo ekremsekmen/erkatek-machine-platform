@@ -1,24 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Factory, Settings2, Eye, TrendingUp, Plus } from "lucide-react"
-import { prisma } from "@/lib/prisma"
-
-export const dynamic = "force-dynamic"
+import { getDashboardStats } from "@/lib/queries/machines"
 
 export const metadata: Metadata = {
   title: "Dashboard",
-}
-
-async function getDashboardStats() {
-  const [sectorCount, machineCount, activeMachines, featuredMachines] =
-    await Promise.all([
-      prisma.sector.count(),
-      prisma.machine.count(),
-      prisma.machine.count({ where: { isActive: true } }),
-      prisma.machine.count({ where: { isFeatured: true } }),
-    ])
-
-  return { sectorCount, machineCount, activeMachines, featuredMachines }
 }
 
 export default async function AdminDashboardPage() {

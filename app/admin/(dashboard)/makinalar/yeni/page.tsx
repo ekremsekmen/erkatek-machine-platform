@@ -1,21 +1,13 @@
 import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
+import { getFormSectors } from "@/lib/queries/sectors"
 import { MachineForm } from "@/components/admin/MachineForm"
 
 export const metadata: Metadata = {
   title: "Yeni Makina Ekle",
 }
 
-async function getSectors() {
-  return prisma.sector.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  })
-}
-
 export default async function NewMachinePage() {
-  const sectors = await getSectors()
+  const sectors = await getFormSectors()
 
   return (
     <div className="space-y-6">

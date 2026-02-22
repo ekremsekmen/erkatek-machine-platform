@@ -3,36 +3,19 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { ArrowLeft, CheckCircle2, Phone, Mail } from "lucide-react"
-import { prisma } from "@/lib/prisma"
-import type { TechnicalSpecsData, MachineWithSector, Machine } from "@/types"
+import { getPublicMachine, getRelatedMachines } from "@/lib/queries/machines"
+import type { TechnicalSpecsData, Machine } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-
-export const dynamic = "force-dynamic"
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getMachine(slug: string): Promise<MachineWithSector | null> {
-  return prisma.machine.findUnique({
-    where: { slug, isActive: true },
-    include: { sector: true },
-  })
-}
-
-async function getRelated(sectorId: string, currentId: string) {
-  return prisma.machine.findMany({
-    where: { sectorId, isActive: true, id: { not: currentId } },
-    take: 3,
-    orderBy: { isFeatured: "desc" },
-  })
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const m = await getMachine(slug)
+  const m = await getPublicMachine(slug)
   if (!m) return { title: "Makina Bulunamadı" }
   return {
     title: m.metaTitle || m.name,
@@ -47,10 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MachineDetailPage({ params }: Props) {
   const { slug } = await params
-  const machine = await getMachine(slug)
+  const machine = await getPublicMachine(slug)
   if (!machine) notFound()
 
-  const related = await getRelated(machine.sectorId, machine.id)
+  const related = await getRelatedMachines(machine.sectorId, machine.id)
   const specs = machine.technicalSpecs as unknown as TechnicalSpecsData
 
   return (

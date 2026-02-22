@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { getAdminMachine } from "@/lib/queries/machines"
+import { getFormSectors } from "@/lib/queries/sectors"
 import { MachineForm } from "@/components/admin/MachineForm"
 
 interface EditMachinePageProps {
@@ -11,27 +12,13 @@ export const metadata: Metadata = {
   title: "Makina Düzenle",
 }
 
-async function getMachine(id: string) {
-  return prisma.machine.findUnique({
-    where: { id },
-  })
-}
-
-async function getSectors() {
-  return prisma.sector.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  })
-}
-
 export default async function EditMachinePage({
   params,
 }: EditMachinePageProps) {
   const { id } = await params
   const [machine, sectors] = await Promise.all([
-    getMachine(id),
-    getSectors(),
+    getAdminMachine(id),
+    getFormSectors(),
   ])
 
   if (!machine) {

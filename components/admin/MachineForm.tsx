@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { cn, generateSlug } from "@/lib/utils"
+import { createMachine, updateMachine } from "@/lib/actions/machine"
 import type { Machine } from "@/types"
 import type { TechnicalSpecsData } from "@/types"
 
@@ -166,22 +167,15 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
     setSaving(true)
 
     try {
-      const url = isEditing
-        ? `/api/admin/machines/${machine.id}`
-        : "/api/admin/machines"
+      const result = isEditing
+        ? await updateMachine(machine.id, formData)
+        : await createMachine(formData)
 
-      const res = await fetch(url, {
-        method: isEditing ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-
-      if (res.ok) {
+      if (result.success) {
         router.push("/admin/makinalar")
         router.refresh()
       } else {
-        const error = await res.json()
-        alert(error.error || "Bir hata oluştu.")
+        alert(result.error)
       }
     } catch {
       alert("Bir hata oluştu. Lütfen tekrar deneyin.")

@@ -2,12 +2,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { ChevronRight, Search } from "lucide-react"
-import { prisma } from "@/lib/prisma"
-import type { SectorWithCount } from "@/types"
+import { getPublicSectors } from "@/lib/queries/sectors"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-
-export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Sektörler",
@@ -15,18 +12,8 @@ export const metadata: Metadata = {
     "ERKATEK Makina'nın hizmet verdiği sektörler.",
 }
 
-async function getSectors(): Promise<SectorWithCount[]> {
-  return prisma.sector.findMany({
-    where: { isActive: true },
-    include: {
-      _count: { select: { machines: { where: { isActive: true } } } },
-    },
-    orderBy: { order: "asc" },
-  })
-}
-
 export default async function SectorsPage() {
-  const sectors = await getSectors()
+  const sectors = await getPublicSectors()
 
   return (
     <>

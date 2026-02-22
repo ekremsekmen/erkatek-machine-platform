@@ -3,31 +3,17 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { ArrowLeft, Search } from "lucide-react"
-import { prisma } from "@/lib/prisma"
-import type { SectorWithMachines, Machine } from "@/types"
+import { getPublicSector } from "@/lib/queries/sectors"
+import type { Machine } from "@/types"
 import { Badge } from "@/components/ui/badge"
-
-export const dynamic = "force-dynamic"
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getSector(slug: string): Promise<SectorWithMachines | null> {
-  return prisma.sector.findUnique({
-    where: { slug, isActive: true },
-    include: {
-      machines: {
-        where: { isActive: true },
-        orderBy: [{ isFeatured: "desc" }, { order: "asc" }],
-      },
-    },
-  })
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const sector = await getSector(slug)
+  const sector = await getPublicSector(slug)
   if (!sector) return { title: "Sektör Bulunamadı" }
   return {
     title: sector.name,
@@ -37,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SectorDetailPage({ params }: Props) {
   const { slug } = await params
-  const sector = await getSector(slug)
+  const sector = await getPublicSector(slug)
   if (!sector) notFound()
 
   return (

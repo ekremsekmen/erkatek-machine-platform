@@ -30,9 +30,13 @@ interface SectorItem {
   slug: string
 }
 
-export function Navbar() {
+interface NavbarProps {
+  sectors?: SectorItem[]
+}
+
+export function Navbar({ sectors: initialSectors = [] }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
-  const [sectors, setSectors] = useState<SectorItem[]>([])
+  const sectors = initialSectors
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
   const pathname = usePathname()
@@ -65,15 +69,6 @@ export function Navbar() {
   useEffect(() => {
     requestAnimationFrame(() => setSheetOpen(false))
   }, [pathname])
-
-  useEffect(() => {
-    fetch("/api/sectors")
-      .then((r) => r.json())
-      .then((data: unknown) => {
-        if (Array.isArray(data)) setSectors(data as SectorItem[])
-      })
-      .catch(() => {})
-  }, [])
 
   const isProductsActive =
     pathname.startsWith("/sektorler") || pathname.startsWith("/makinalar")

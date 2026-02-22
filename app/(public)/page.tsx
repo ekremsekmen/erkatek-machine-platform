@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card"
+import { getNavSectors } from "@/lib/queries/sectors"
 
 export const metadata: Metadata = {
   title: "ERKATEK Makina | Endüstriyel Makina Çözümleri",
@@ -47,13 +48,7 @@ const capabilities = [
   },
 ]
 
-const sectors = [
-  { name: "Gıda Sektörü", slug: "gida-sektoru" },
-  { name: "İlaç Sektörü", slug: "ilac-sektoru" },
-  { name: "Kimya Sektörü", slug: "kimya-sektoru" },
-  { name: "Otomotiv Sektörü", slug: "otomotiv-sektoru" },
-  { name: "Ambalaj Sektörü", slug: "ambalaj-sektoru" },
-]
+
 
 const steps = [
   { num: "01", title: "Keşif & Analiz", desc: "İhtiyaçlarınızı detaylı analiz ediyoruz." },
@@ -62,7 +57,8 @@ const steps = [
   { num: "04", title: "Teslim & Destek", desc: "Kurulum, eğitim ve teknik destek sunuyoruz." },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const sectors = await getNavSectors()
   return (
     <>
       {/* ── HERO ── */}
