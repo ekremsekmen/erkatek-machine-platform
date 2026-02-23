@@ -133,7 +133,7 @@ export default async function HomePage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {capabilities.map((c) => (
-              <Card key={c.title} className="p-0 py-0 shadow-none hover:shadow-md transition-shadow">
+              <Card key={c.title} className="shadow-none hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <c.icon className="h-5 w-5" />

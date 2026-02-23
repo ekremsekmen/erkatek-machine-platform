@@ -14,6 +14,7 @@ import {
   Home,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 const sidebarLinks = [
   {
@@ -54,13 +55,12 @@ export function AdminSidebar() {
             <span className="text-sm font-bold">ERKATEK Admin</span>
           </Link>
         )}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-            collapsed && "mx-auto"
-          )}
+          className={cn(collapsed && "mx-auto")}
           aria-label={collapsed ? "Menüyü genişlet" : "Menüyü daralt"}
         >
           {collapsed ? (
@@ -68,7 +68,7 @@ export function AdminSidebar() {
           ) : (
             <ChevronLeft className="h-4 w-4" />
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Navigation */}
@@ -110,18 +110,19 @@ export function AdminSidebar() {
           <Home className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Siteyi Görüntüle</span>}
         </Link>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => signOutAction()}
           className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive",
+            "w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
             collapsed && "justify-center px-2"
           )}
           title={collapsed ? "Çıkış Yap" : undefined}
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Çıkış Yap</span>}
-        </button>
+        </Button>
       </div>
     </aside>
   )

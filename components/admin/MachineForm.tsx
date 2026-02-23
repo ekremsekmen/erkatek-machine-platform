@@ -16,6 +16,20 @@ import { createMachine, updateMachine } from "@/lib/actions/machine"
 import type { Machine } from "@/types"
 import type { TechnicalSpecsData } from "@/types"
 
+// ── shadcn bileşenleri ──────────────────────────────────────────────
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 interface MachineFormProps {
   sectors: { id: string; name: string }[]
   machine?: Machine
@@ -195,32 +209,34 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         Makinalar listesine dön
       </Link>
 
-      {/* Basic Info */}
+      {/* ── Temel Bilgiler ── */}
       <div className="rounded-xl border bg-card p-6">
         <h2 className="mb-4 text-lg font-semibold">Temel Bilgiler</h2>
         <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="machine-name" className="mb-1.5 block text-sm font-medium">
+            {/* Makina Adı */}
+            <div className="space-y-2">
+              <Label htmlFor="machine-name">
                 Makina Adı <span className="text-destructive">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="machine-name"
                 name="name"
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="Örn: Otomatik Paketleme Makinası"
                 autoComplete="off"
               />
             </div>
-            <div>
-              <label htmlFor="machine-slug" className="mb-1.5 block text-sm font-medium">
+
+            {/* Slug */}
+            <div className="space-y-2">
+              <Label htmlFor="machine-slug">
                 Slug <span className="text-destructive">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="machine-slug"
                 name="slug"
                 type="text"
@@ -229,41 +245,41 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, slug: e.target.value }))
                 }
-                className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="otomatik-paketleme-makinasi"
                 autoComplete="off"
               />
             </div>
           </div>
 
-          <div>
-            <label htmlFor="machine-sector" className="mb-1.5 block text-sm font-medium">
+          {/* Sektör */}
+          <div className="space-y-2">
+            <Label htmlFor="machine-sector">
               Sektör <span className="text-destructive">*</span>
-            </label>
-            <select
-              id="machine-sector"
-              name="sectorId"
-              required
+            </Label>
+            <Select
               value={formData.sectorId}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, sectorId: e.target.value }))
+              onValueChange={(val) =>
+                setFormData((prev) => ({ ...prev, sectorId: val }))
               }
-              className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              required
             >
-              <option value="">Sektör Seçin</option>
-              {sectors.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="machine-sector">
+                <SelectValue placeholder="Sektör Seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {sectors.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <label htmlFor="machine-short-desc" className="mb-1.5 block text-sm font-medium">
-              Kısa Açıklama
-            </label>
-            <input
+          {/* Kısa Açıklama */}
+          <div className="space-y-2">
+            <Label htmlFor="machine-short-desc">Kısa Açıklama</Label>
+            <Input
               id="machine-short-desc"
               name="shortDescription"
               type="text"
@@ -274,18 +290,18 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                   shortDescription: e.target.value,
                 }))
               }
-              className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="Kartlarda ve listelerde gösterilecek kısa açıklama"
               maxLength={300}
               autoComplete="off"
             />
           </div>
 
-          <div>
-            <label htmlFor="machine-description" className="mb-1.5 block text-sm font-medium">
+          {/* Detaylı Açıklama */}
+          <div className="space-y-2">
+            <Label htmlFor="machine-description">
               Detaylı Açıklama <span className="text-destructive">*</span>
-            </label>
-            <textarea
+            </Label>
+            <Textarea
               id="machine-description"
               name="description"
               required
@@ -297,7 +313,7 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                 }))
               }
               rows={6}
-              className="w-full resize-none rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="resize-none"
               placeholder="Makina hakkında detaylı bilgi (en az 20 karakter)..."
               autoComplete="off"
             />
@@ -305,15 +321,14 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         </div>
       </div>
 
-      {/* Images */}
+      {/* ── Görseller ── */}
       <div className="rounded-xl border bg-card p-6">
         <h2 className="mb-4 text-lg font-semibold">Görseller</h2>
         <div className="space-y-4">
-          <div>
-            <label htmlFor="machine-main-image" className="mb-1.5 block text-sm font-medium">
-              Ana Görsel URL
-            </label>
-            <input
+          {/* Ana Görsel */}
+          <div className="space-y-2">
+            <Label htmlFor="machine-main-image">Ana Görsel URL</Label>
+            <Input
               id="machine-main-image"
               name="mainImage"
               type="url"
@@ -321,24 +336,21 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, mainImage: e.target.value }))
               }
-              className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="https://..."
               autoComplete="off"
             />
           </div>
 
-          <div>
-            <label htmlFor="machine-add-image" className="mb-1.5 block text-sm font-medium">
-              Ek Görseller
-            </label>
+          {/* Ek Görseller */}
+          <div className="space-y-2">
+            <Label htmlFor="machine-add-image">Ek Görseller</Label>
             <div className="flex gap-2">
-              <input
+              <Input
                 id="machine-add-image"
                 name="newImage"
                 type="url"
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="Görsel URL'si ekleyin..."
                 autoComplete="off"
                 onKeyDown={(e) => {
@@ -348,14 +360,17 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                   }
                 }}
               />
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="icon"
                 onClick={addImage}
-                className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                aria-label="Görsel ekle"
               >
                 <Plus className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
+
             {formData.images.length > 0 && (
               <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
                 {formData.images.map((img, i) => (
@@ -366,13 +381,16 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                       alt={`Görsel ${i + 1}`}
                       className="aspect-square w-full rounded object-cover"
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="destructive"
+                      size="icon"
                       onClick={() => removeImage(i)}
-                      className="absolute -right-2 -top-2 rounded-full bg-destructive p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute -right-2 -top-2 h-6 w-6 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label={`Görsel ${i + 1}'i kaldır`}
                     >
                       <X className="h-3 w-3" />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -381,18 +399,19 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         </div>
       </div>
 
-      {/* Features */}
+      {/* ── Öne Çıkan Özellikler ── */}
       <div className="rounded-xl border bg-card p-6">
         <h2 className="mb-4 text-lg font-semibold">Öne Çıkan Özellikler</h2>
         <div className="flex gap-2">
-          <label htmlFor="machine-add-feature" className="sr-only">Özellik ekle</label>
-          <input
+          <Label htmlFor="machine-add-feature" className="sr-only">
+            Özellik ekle
+          </Label>
+          <Input
             id="machine-add-feature"
             name="newFeature"
             type="text"
             value={newFeature}
             onChange={(e) => setNewFeature(e.target.value)}
-            className="flex-1 rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             placeholder="Özellik ekleyin..."
             autoComplete="off"
             onKeyDown={(e) => {
@@ -402,14 +421,17 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
               }
             }}
           />
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={addFeature}
-            className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            aria-label="Özellik ekle"
           >
             <Plus className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
+
         {formData.features.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {formData.features.map((feature, i) => (
@@ -422,6 +444,7 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                   type="button"
                   onClick={() => removeFeature(i)}
                   className="text-muted-foreground hover:text-destructive"
+                  aria-label={`"${feature}" özelliğini kaldır`}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -431,91 +454,100 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         )}
       </div>
 
-      {/* Technical Specs */}
+      {/* ── Teknik Özellikler ── */}
       <div className="rounded-xl border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Teknik Özellikler</h2>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={addCategory}
-            className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
           >
             <Plus className="h-4 w-4" />
             Kategori Ekle
-          </button>
+          </Button>
         </div>
 
         <div className="space-y-6">
           {formData.technicalSpecs.categories.map((cat, catIndex) => (
             <div key={catIndex} className="rounded-lg border bg-muted/30 p-4">
               <div className="mb-3 flex items-center gap-3">
-                <input
+                <Input
                   type="text"
                   value={cat.category}
                   onChange={(e) =>
                     updateCategoryName(catIndex, e.target.value)
                   }
-                  className="flex-1 rounded-lg border bg-background px-4 py-2 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="flex-1 font-medium"
                   placeholder="Kategori adı (Örn: Boyutlar)"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => removeCategory(catIndex)}
-                  className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  className="shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  aria-label="Kategoriyi sil"
                 >
                   <Trash2 className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
 
               <div className="space-y-2">
                 {cat.specs.map((spec, specIndex) => (
                   <div key={specIndex} className="flex items-center gap-2">
-                    <input
+                    <Input
                       type="text"
                       value={spec.label}
                       onChange={(e) =>
                         updateSpec(catIndex, specIndex, "label", e.target.value)
                       }
-                      className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                      className="flex-1"
                       placeholder="Özellik"
                     />
-                    <input
+                    <Input
                       type="text"
                       value={spec.value}
                       onChange={(e) =>
                         updateSpec(catIndex, specIndex, "value", e.target.value)
                       }
-                      className="w-28 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                      className="w-28"
                       placeholder="Değer"
                     />
-                    <input
+                    <Input
                       type="text"
                       value={spec.unit || ""}
                       onChange={(e) =>
                         updateSpec(catIndex, specIndex, "unit", e.target.value)
                       }
-                      className="w-20 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                      className="w-20"
                       placeholder="Birim"
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => removeSpec(catIndex, specIndex)}
-                      className="rounded-lg p-2 text-muted-foreground hover:text-destructive"
+                      className="shrink-0 text-muted-foreground hover:text-destructive"
+                      aria-label="Özelliği sil"
                     >
                       <X className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="link"
+                size="sm"
                 onClick={() => addSpec(catIndex)}
-                className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                className="mt-2 h-auto p-0 text-sm"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Özellik Ekle
-              </button>
+              </Button>
             </div>
           ))}
 
@@ -527,16 +559,15 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         </div>
       </div>
 
-      {/* Settings */}
+      {/* ── Ayarlar & SEO ── */}
       <div className="rounded-xl border bg-card p-6">
         <h2 className="mb-4 text-lg font-semibold">Ayarlar & SEO</h2>
         <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
-            <div>
-              <label htmlFor="machine-order" className="mb-1.5 block text-sm font-medium">
-                Sıralama
-              </label>
-              <input
+            {/* Sıralama */}
+            <div className="space-y-2">
+              <Label htmlFor="machine-order">Sıralama</Label>
+              <Input
                 id="machine-order"
                 name="order"
                 type="number"
@@ -547,53 +578,51 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                     order: parseInt(e.target.value) || 0,
                   }))
                 }
-                className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 min={0}
                 autoComplete="off"
               />
             </div>
-            <div className="flex items-end gap-6">
-              <label htmlFor="machine-active" className="flex items-center gap-2 text-sm">
-                <input
+
+            {/* Toggle'lar */}
+            <div className="flex items-end gap-6 pb-1">
+              <div className="flex items-center space-x-2">
+                <Checkbox
                   id="machine-active"
-                  name="isActive"
-                  type="checkbox"
                   checked={formData.isActive}
-                  onChange={(e) =>
+                  onCheckedChange={(checked) =>
                     setFormData((prev) => ({
                       ...prev,
-                      isActive: e.target.checked,
+                      isActive: checked as boolean,
                     }))
                   }
-                  className="h-4 w-4 rounded border-gray-300"
                 />
-                Aktif
-              </label>
-              <label htmlFor="machine-featured" className="flex items-center gap-2 text-sm">
-                <input
+                <Label htmlFor="machine-active" className="cursor-pointer">
+                  Aktif
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
                   id="machine-featured"
-                  name="isFeatured"
-                  type="checkbox"
                   checked={formData.isFeatured}
-                  onChange={(e) =>
+                  onCheckedChange={(checked) =>
                     setFormData((prev) => ({
                       ...prev,
-                      isFeatured: e.target.checked,
+                      isFeatured: checked as boolean,
                     }))
                   }
-                  className="h-4 w-4 rounded border-gray-300"
                 />
-                Öne Çıkan
-              </label>
+                <Label htmlFor="machine-featured" className="cursor-pointer">
+                  Öne Çıkan
+                </Label>
+              </div>
             </div>
           </div>
 
+          {/* SEO */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="machine-meta-title" className="mb-1.5 block text-sm font-medium">
-                Meta Başlık
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="machine-meta-title">Meta Başlık</Label>
+              <Input
                 id="machine-meta-title"
                 name="metaTitle"
                 type="text"
@@ -604,17 +633,14 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                     metaTitle: e.target.value,
                   }))
                 }
-                className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="SEO başlığı (max 70 karakter)"
                 maxLength={70}
                 autoComplete="off"
               />
             </div>
-            <div>
-              <label htmlFor="machine-meta-desc" className="mb-1.5 block text-sm font-medium">
-                Meta Açıklama
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="machine-meta-desc">Meta Açıklama</Label>
+              <Input
                 id="machine-meta-desc"
                 name="metaDescription"
                 type="text"
@@ -625,7 +651,6 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
                     metaDescription: e.target.value,
                   }))
                 }
-                className="w-full rounded-lg border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="SEO açıklaması (max 160 karakter)"
                 maxLength={160}
                 autoComplete="off"
@@ -635,29 +660,19 @@ export function MachineForm({ sectors, machine }: MachineFormProps) {
         </div>
       </div>
 
-      {/* Submit */}
+      {/* ── Submit ── */}
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={saving}
-          className={cn(
-            "inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90",
-            saving && "cursor-not-allowed opacity-70"
-          )}
-        >
+        <Button type="submit" disabled={saving} size="lg">
           {saving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Save className="h-4 w-4" />
           )}
           {isEditing ? "Değişiklikleri Kaydet" : "Makina Oluştur"}
-        </button>
-        <Link
-          href="/admin/makinalar"
-          className="rounded-lg border px-6 py-3 text-sm font-medium transition-colors hover:bg-muted"
-        >
-          İptal
-        </Link>
+        </Button>
+        <Button asChild variant="outline" size="lg">
+          <Link href="/admin/makinalar">İptal</Link>
+        </Button>
       </div>
     </form>
   )

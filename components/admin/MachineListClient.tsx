@@ -13,6 +13,7 @@ import {
   EyeOff,
   Star,
 } from "lucide-react"
+import { toast } from "sonner"
 import { formatDateTime } from "@/lib/utils"
 import { deleteMachine } from "@/lib/actions/machine"
 import type { MachineWithSector } from "@/types"
@@ -28,6 +29,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface MachineListClientProps {
   machines: MachineWithSector[]
@@ -36,16 +45,29 @@ interface MachineListClientProps {
 export function MachineListClient({ machines }: MachineListClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bu makinayı silmek istediğinize emin misiniz?")) return
+  // İlk tık → confirm dialog aç
+  const requestDelete = (id: string) => {
+    setPendingDeleteId(id)
+    setConfirmOpen(true)
+  }
 
-    setDeleteId(id)
+  // Dialog'tan onay gelince silme işlemini yap
+  const confirmDelete = () => {
+    if (!pendingDeleteId) return
+    setConfirmOpen(false)
+    setDeleteId(pendingDeleteId)
+    setPendingDeleteId(null)
+
     startTransition(async () => {
-      const result = await deleteMachine(id)
-      if (!result.success) {
-        alert(result.error)
+      const result = await deleteMachine(deleteId ?? pendingDeleteId!)
+      if (result.success) {
+        toast.success("Makina silindi.")
+      } else {
+        toast.error(result.error ?? "Bir hata oluştu.")
       }
       setDeleteId(null)
     })
@@ -59,7 +81,27 @@ export function MachineListClient({ machines }: MachineListClientProps) {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* ── Silme Onay Dialogu ── */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Makinayı Sil</DialogTitle>
+            <DialogDescription>
+              Bu makinayı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              İptal
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Evet, Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Sayfa Başlığı ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Makinalar</h1>
@@ -75,13 +117,15 @@ export function MachineListClient({ machines }: MachineListClientProps) {
         </Button>
       </div>
 
-      {/* Table */}
+      {/* ── Tablo ── */}
       <Card>
         <CardContent className="p-0">
           <div className="border-b p-4">
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Label htmlFor="machine-search" className="sr-only">Makina veya sektör ara</Label>
+              <Label htmlFor="machine-search" className="sr-only">
+                Makina veya sektör ara
+              </Label>
               <Input
                 id="machine-search"
                 name="search"
@@ -181,7 +225,7 @@ export function MachineListClient({ machines }: MachineListClientProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(machine.id)}
+                          onClick={() => requestDelete(machine.id)}
                           disabled={deleteId === machine.id || isPending}
                           className="hover:bg-destructive/10 hover:text-destructive"
                           aria-label="Sil"

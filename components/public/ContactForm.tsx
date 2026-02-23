@@ -1,12 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react"
+import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface FormData {
   name: string
@@ -56,7 +63,7 @@ export function ContactForm() {
         <div className="container-page">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {channels.map((ch) => (
-              <Card key={ch.title} className="p-0 py-0 shadow-none">
+              <Card key={ch.title} className="shadow-none">
                 <CardContent className="flex items-start gap-3 p-5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <ch.icon className="h-4 w-4" />
@@ -173,22 +180,24 @@ export function ContactForm() {
                 <Label htmlFor="subject">
                   Konu <span className="text-destructive">*</span>
                 </Label>
-                <select
-                  id="subject"
-                  name="subject"
-                  required
+                <Select
                   value={form.subject}
-                  onChange={handleChange}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  autoComplete="off"
+                  onValueChange={(val) =>
+                    setForm((p) => ({ ...p, subject: val }))
+                  }
+                  required
                 >
-                  <option value="">Konu Seçiniz</option>
-                  <option value="teklif">Fiyat Teklifi</option>
-                  <option value="bilgi">Ürün Bilgisi</option>
-                  <option value="destek">Teknik Destek</option>
-                  <option value="isbirligi">İş Birliği</option>
-                  <option value="diger">Diğer</option>
-                </select>
+                  <SelectTrigger id="subject">
+                    <SelectValue placeholder="Konu Seçiniz" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="teklif">Fiyat Teklifi</SelectItem>
+                    <SelectItem value="bilgi">Ürün Bilgisi</SelectItem>
+                    <SelectItem value="destek">Teknik Destek</SelectItem>
+                    <SelectItem value="isbirligi">İş Birliği</SelectItem>
+                    <SelectItem value="diger">Diğer</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="message">
@@ -209,7 +218,7 @@ export function ContactForm() {
               <Button type="submit" disabled={submitting} size="lg">
                 {submitting ? (
                   <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Gönderiliyor...
                   </>
                 ) : (

@@ -70,7 +70,7 @@ export default function AboutPage() {
       <section className="py-16 md:py-24">
         <div className="container-page">
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="p-0 py-0 shadow-none">
+            <Card className="shadow-none">
               <CardContent className="p-8">
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Target className="h-5 w-5" />
@@ -83,7 +83,7 @@ export default function AboutPage() {
                 </CardDescription>
               </CardContent>
             </Card>
-            <Card className="p-0 py-0 shadow-none">
+            <Card className="shadow-none">
               <CardContent className="p-8">
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
                   <Eye className="h-5 w-5" />
@@ -112,7 +112,7 @@ export default function AboutPage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((v) => (
-              <Card key={v.title} className="p-0 py-0 shadow-none text-center">
+              <Card key={v.title} className="shadow-none text-center">
                 <CardContent className="p-6">
                   <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <v.icon className="h-5 w-5" />

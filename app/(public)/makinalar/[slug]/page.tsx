@@ -161,7 +161,7 @@ export default async function MachineDetailPage({ params }: Props) {
             <div className="lg:col-span-1">
               <div className="sticky top-20 space-y-5">
                 {/* CTA */}
-                <Card className="p-0 py-0 shadow-none">
+                <Card className="shadow-none">
                   <CardContent className="p-6">
                     <h3 className="mb-2 text-[16px] font-bold text-primary">Bilgi Alın</h3>
                     <p className="mb-5 text-[13px] leading-relaxed text-muted-foreground">
@@ -185,7 +185,7 @@ export default async function MachineDetailPage({ params }: Props) {
                 </Card>
 
                 {/* Info */}
-                <Card className="p-0 py-0 shadow-none">
+                <Card className="shadow-none">
                   <CardContent className="p-6">
                     <h3 className="mb-3 text-[14px] font-bold text-primary">Makina Bilgileri</h3>
                     <dl className="space-y-2.5 text-[13px]">

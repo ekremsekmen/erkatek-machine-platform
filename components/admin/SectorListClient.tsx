@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   X,
 } from "lucide-react"
+import { toast } from "sonner"
 import { generateSlug } from "@/lib/utils"
 import {
   createSector,
@@ -32,6 +33,14 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface SectorListClientProps {
   sectors: Sector[]
@@ -43,6 +52,8 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [saving, setSaving] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   // Form state
@@ -100,28 +111,41 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
           : await createSector(formData)
 
         if (result.success) {
+          toast.success(
+            editingSector ? "Sektör güncellendi." : "Sektör oluşturuldu."
+          )
           resetForm()
         } else {
-          alert(result.error)
+          toast.error(result.error ?? "Bir hata oluştu.")
         }
       } catch {
-        alert("Bir hata oluştu. Lütfen tekrar deneyin.")
+        toast.error("Bir hata oluştu. Lütfen tekrar deneyin.")
       } finally {
         setSaving(false)
       }
     })
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bu sektörü silmek istediğinize emin misiniz? İlişkili tüm makinalar da silinecektir.")) {
-      return
-    }
+  // İlk tık → confirm dialog aç
+  const requestDelete = (id: string) => {
+    setPendingDeleteId(id)
+    setConfirmOpen(true)
+  }
 
-    setDeleteId(id)
+  // Dialog onay → silme işlemini yap
+  const confirmDelete = () => {
+    if (!pendingDeleteId) return
+    const idToDelete = pendingDeleteId
+    setConfirmOpen(false)
+    setPendingDeleteId(null)
+    setDeleteId(idToDelete)
+
     startTransition(async () => {
-      const result = await deleteSector(id)
-      if (!result.success) {
-        alert(result.error)
+      const result = await deleteSector(idToDelete)
+      if (result.success) {
+        toast.success("Sektör silindi.")
+      } else {
+        toast.error(result.error ?? "Bir hata oluştu.")
       }
       setDeleteId(null)
     })
@@ -133,7 +157,28 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* ── Silme Onay Dialogu ── */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sektörü Sil</DialogTitle>
+            <DialogDescription>
+              Bu sektörü silmek istediğinize emin misiniz? İlişkili tüm
+              makinalar da silinecektir. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              İptal
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Evet, Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Sayfa Başlığı ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Sektörler</h1>
@@ -152,7 +197,7 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
         </Button>
       </div>
 
-      {/* Form Modal */}
+      {/* ── Form Kartı ── */}
       {showForm && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -214,9 +259,9 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
                   placeholder="Sektör açıklaması..."
                   autoComplete="off"
                 />
-            </div>
+              </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="sector-image">Görsel URL</Label>
                   <Input
@@ -225,7 +270,10 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
                     type="url"
                     value={formData.image}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, image: e.target.value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        image: e.target.value,
+                      }))
                     }
                     placeholder="https://..."
                     autoComplete="off"
@@ -260,7 +308,9 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
                         }))
                       }
                     />
-                    <Label htmlFor="sector-active" className="cursor-pointer">Aktif</Label>
+                    <Label htmlFor="sector-active" className="cursor-pointer">
+                      Aktif
+                    </Label>
                   </div>
                 </div>
               </div>
@@ -283,13 +333,15 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
         </Card>
       )}
 
-      {/* Search & Table */}
+      {/* ── Arama & Tablo ── */}
       <Card>
         <CardContent className="p-0">
           <div className="border-b p-4">
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Label htmlFor="sector-search" className="sr-only">Sektör ara</Label>
+              <Label htmlFor="sector-search" className="sr-only">
+                Sektör ara
+              </Label>
               <Input
                 id="sector-search"
                 name="search"
@@ -347,7 +399,7 @@ export function SectorListClient({ sectors }: SectorListClientProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(sector.id)}
+                          onClick={() => requestDelete(sector.id)}
                           disabled={deleteId === sector.id || isPending}
                           className="hover:bg-destructive/10 hover:text-destructive"
                           aria-label="Sil"

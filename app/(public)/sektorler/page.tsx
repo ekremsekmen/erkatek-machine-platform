@@ -49,7 +49,7 @@ export default async function SectorsPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {sectors.map((sector) => (
                 <Link key={sector.id} href={`/sektorler/${sector.slug}`} className="group block">
-                  <Card className="h-full p-0 py-0 shadow-none hover:shadow-md transition-shadow">
+                  <Card className="h-full shadow-none hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       {/* Image */}
                       {sector.image && (
