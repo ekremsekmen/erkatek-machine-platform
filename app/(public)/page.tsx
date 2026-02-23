@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -62,16 +63,26 @@ export default async function HomePage() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="bg-white py-20 md:py-28 lg:py-36">
-        <div className="container-page">
+      <section className="relative overflow-hidden py-20 md:py-28 lg:py-36">
+        {/* Background image */}
+        <Image
+          src="/images/hero.jpg"
+          alt="ERKATEK Makina - Endüstriyel Makina Üretimi"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="container-page relative z-10">
           <div className="max-w-2xl">
             <p className="mb-4 text-[13px] font-semibold uppercase tracking-wider text-accent">
               Endüstriyel Makina Çözümleri
             </p>
-            <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.1] text-primary">
+            <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.1] text-white">
               Geleceğin makinalarını bugünden üretiyoruz.
             </h1>
-            <p className="mt-5 text-[17px] leading-relaxed text-muted-foreground">
+            <p className="mt-5 text-[17px] leading-relaxed text-white/80">
               25 yılı aşkın tecrübemizle sektörünüze özel, uluslararası
               standartlarda endüstriyel makina sistemleri tasarlıyor ve üretiyoruz.
             </p>
@@ -82,7 +93,7 @@ export default async function HomePage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
                 <Link href="/iletisim">
                   İletişime Geçin
                 </Link>
